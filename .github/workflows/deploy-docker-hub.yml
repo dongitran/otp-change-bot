@@ -17,7 +17,7 @@ jobs:
           format: markdown
           disable_web_page_preview: true
           message: |
-            *🚀 Database Change Bot* 🏃‍♂️${{ github.run_number }}
+            *🚀 OTP Change Bot* 🏃‍♂️${{ github.run_number }}
 
             *👤 Committer:* [${{ github.actor }}](https://github.com/${{ github.actor }})
             *📝 Commit message:* ${{ github.event.commits[0].message }}
@@ -56,7 +56,7 @@ jobs:
         run: |
           docker buildx create --name builder --use
           docker buildx inspect builder --bootstrap
-          docker buildx build -t ideavn/db-change-bot:latest --push .
+          docker buildx build -t ideavn/otp-change-bot:latest --push .
       
       - name: Remote ssh to pull and run docker
         env:
@@ -73,11 +73,11 @@ jobs:
             whoami
             echo "$ENV_FILE_CONTENT" > /tmp/.env
             echo "$CONFIG_FILE_CONTENT" > /tmp/config.json
-            docker stop db-change-bot
-            docker rm db-change-bot
-            docker pull ideavn/db-change-bot
-            docker run -d --name db-change-bot --env-file /tmp/.env --restart always ideavn/db-change-bot
-            docker cp /tmp/config.json db-change-bot:/usr/src/app/dist/config.json
+            docker stop otp-change-bot
+            docker rm otp-change-bot
+            docker pull ideavn/otp-change-bot
+            docker run -d --name otp-change-bot --env-file /tmp/.env --restart always ideavn/otp-change-bot
+            docker cp /tmp/config.json otp-change-bot:/usr/src/app/dist/config.json
             rm -rf /tmp/.env
             rm -rf /tmp/config.json
             docker image prune -a -f
@@ -95,7 +95,7 @@ jobs:
           format: markdown
           disable_web_page_preview: true
           message: |
-            *🎉 Database Change Bot Deployment Successful*  
+            *🎉 OTP Change Bot Deployment Successful*  
             
             *👤 Committer:* [${{ github.actor }}](https://github.com/${{ github.actor }})
             *📝 Commit message:* ${{ github.event.commits[0].message }}
@@ -116,7 +116,7 @@ jobs:
           format: markdown
           disable_web_page_preview: true
           message: |
-            *❌ Database Change Bot Deployment Failed*  
+            *❌ OTP Change Bot Deployment Failed*  
             
             *👤 Committer:* [${{ github.actor }}](https://github.com/${{ github.actor }})
             *📝 Commit message:* ${{ github.event.commits[0].message }}
