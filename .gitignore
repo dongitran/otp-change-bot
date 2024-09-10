@@ -1,0 +1,9 @@
+node_modules
+dist
+test
+.env
+.env.action
+dist
+config.json
+config.json.local
+config.json.action
