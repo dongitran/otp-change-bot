@@ -3,7 +3,7 @@ const path = require("path");
 const { getDifferences } = require("../functions/get-diff-json");
 const { setupDatabase } = require("../functions/setup-db");
 const { sanitizeJson } = require("../functions/sanitize-json");
-const escapeMarkdown = require("../../otp-email-bot/functions/escape-markdown");
+const escapeMarkdown = require("../functions/escape-markdown");
 
 exports.databaseListener = async (telegramManager) => {
   // Initialize the clients for the databases
