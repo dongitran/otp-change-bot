@@ -2,10 +2,7 @@ name: Daily Docker Container Restart
 
 on:
   schedule:
-    - cron: '25 5 * * *'
-  push:
-    branches:
-      - deploy-restart-daily
+    - cron: '30 5 * * *'
   workflow_dispatch:
 
 jobs:
