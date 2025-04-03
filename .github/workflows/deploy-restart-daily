@@ -1,0 +1,78 @@
+name: Daily Docker Container Restart
+
+on:
+  schedule:
+    - cron: '10 5 * * *'
+  workflow_dispatch:
+
+jobs:
+  send-notification-restart-started:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send Telegram Notification
+        uses: appleboy/telegram-action@master
+        with:
+          to: ${{ secrets.TELEGRAM_GROUP_DEPLOYMENTS }}
+          token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          format: markdown
+          disable_web_page_preview: true
+          message: |
+            *🔄 OTP Change Bot - Daily Restart*
+
+            Scheduled restart initiated...
+            *⏱️ Time:* ${{ github.event.repository.updated_at }}
+
+  restart-container:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Remote SSH to restart Docker container
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST_MAC }}
+          username: ${{ secrets.SSH_USER_NAME_MAC }}
+          password: ${{ secrets.SSH_PASSWORD_MAC }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            whoami
+            echo "Restart container..."
+            /usr/local/bin/docker restart otp-change-bot
+
+  send-notification-restart-completed:
+    needs: restart-container
+    runs-on: ubuntu-latest
+    if: ${{ success() }}
+    steps:
+      - name: Send Telegram Notification
+        uses: appleboy/telegram-action@master
+        with:
+          to: ${{ secrets.TELEGRAM_GROUP_DEPLOYMENTS }}
+          token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          format: markdown
+          disable_web_page_preview: true
+          message: |
+            *✅ OTP Change Bot - Daily Restart Completed*
+            
+            *⏱️ Time:* ${{ github.event.repository.updated_at }}
+            *🤖 Status:* Container restarted successfully
+            
+            Daily maintenance complete 🚀
+
+  send-notification-restart-failed:
+    needs: restart-container
+    runs-on: ubuntu-latest
+    if: ${{ failure() }}
+    steps:
+      - name: Send Telegram Notification
+        uses: appleboy/telegram-action@master
+        with:
+          to: ${{ secrets.TELEGRAM_GROUP_DEPLOYMENTS }}
+          token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          format: markdown
+          disable_web_page_preview: true
+          message: |
+            *❌ OTP Change Bot - Daily Restart Failed*
+            
+            *⏱️ Time:* ${{ github.event.repository.updated_at }}
+            *🚨 Status:* Container restart operation failed
+            
+            Manual intervention may be required ⚠️
