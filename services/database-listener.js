@@ -29,6 +29,7 @@ exports.databaseListener = async (telegramManager) => {
             const payload = JSON.parse(msg.payload);
             const tableName = payload?.table_name;
             const databaseName = payload?.database_name;
+            console.log({ databaseName, tableName })
             if (
               tableName !== process.env.OTP_TABLE_NAME ||
               !process.env.OTP_DB_NAME.split(",").includes(databaseName)
