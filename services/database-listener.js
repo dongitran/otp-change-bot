@@ -5,7 +5,7 @@ const { setupDatabase } = require("../functions/setup-db");
 const { sanitizeJson } = require("../functions/sanitize-json");
 const escapeMarkdown = require("../functions/escape-markdown");
 
-exports.databaseListener = async (telegramManager) => {
+exports.databaseListener = async (telegramManager, rocketChatManager) => {
   // Initialize the clients for the databases
   const postgresClients = [];
   // Load database configurations
@@ -96,13 +96,17 @@ exports.databaseListener = async (telegramManager) => {
                 const otpData = result?.rows[0];
                 const code = otpData?.code;
                 const email = otpData?.identification_value;
+                
                 const emailEscaped = escapeMarkdown(email);
-                const messageSend = emailEscaped + " \\-\\-\\> `" + code + "`";
+                const telegramMessage = emailEscaped + " \\-\\-\\> `" + code + "`";
                 await telegramManager.appendMessage(
-                  messageSend,
+                  telegramMessage,
                   process.env.TELEGRAM_GROUP_ID,
                   undefined
                 );
+
+                const rocketChatMessage = email + " --> " + code;
+                await rocketChatManager.appendMessage(rocketChatMessage);
 
                 client.end();
               }
