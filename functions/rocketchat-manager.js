@@ -79,12 +79,10 @@ class RocketChatManager {
 
     try {
       const response = await axios.post(
-        `${this.serverUrl}/api/v1/chat.sendMessage`,
+        `${this.serverUrl}/api/v1/chat.postMessage`,
         {
-          message: {
-            rid: this.targetChannel, // Room ID hoặc channel name
-            msg: message,
-          },
+          channel: this.targetChannel,
+          text: message
         },
         {
           headers: {
@@ -105,7 +103,7 @@ class RocketChatManager {
         return true;
       }
     } catch (error) {
-      console.error("RocketChat send message failed:", error.message);
+      console.error("RocketChat send message failed:", error);
 
       await insertMongo("rocketchat_manager_log", {
         createdAt: new Date(),
