@@ -3,6 +3,7 @@ const path = require("path");
 const logger = require("morgan");
 const { Telegraf } = require("telegraf");
 const TelegramManager = require("./functions/telegram-manager");
+const RocketChatManager = require("./functions/rocketchat-manager");
 const { scheduleJob } = require("node-schedule");
 const { databaseListener } = require("./services/database-listener");
 const { insertMongo, initMongo } = require("./functions/logger");
@@ -28,12 +29,21 @@ bot.launch();
 
 const telegramManager = new TelegramManager(bot, undefined, undefined);
 
+// RocketChat setup
+const rocketChatManager = new RocketChatManager(
+  process.env.ROCKETCHAT_SERVER_URL,
+  process.env.ROCKETCHAT_USERNAME,
+  process.env.ROCKETCHAT_PASSWORD,
+  process.env.ROCKETCHAT_TARGET_CHANNEL
+);
+
 // Initialize database listener to listen for database changes
-databaseListener(telegramManager).catch(console.error);
+databaseListener(telegramManager, rocketChatManager).catch(console.error);
 
 // Schedule the telegram bot to send a message every 1 seconds
 scheduleJob("*/1 * * * * *", async function () {
   telegramManager.sendOneMessage(true);
+  rocketChatManager.sendOneMessage(true);
 });
 
 module.exports = app;
